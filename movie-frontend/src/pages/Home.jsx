@@ -1,20 +1,48 @@
 import '../css/Home.css'
 import MovieCard from "../components/MovieCard";
-import { useState } from "react";
+import { searchMovies, getPopularMovies } from '../services/api';
+import { useState, useEffect } from "react";
 
 function Home() {
     const [searchQuery, setSearchQuery] = useState("");     // persist the search query in state so that it can be used to filter the movies and also to persist the value in the input field
+    const [movies, setMovies] = useState([]);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const movies = [
-        { id: 1, title: "John Wick", release_date: 2020 },
-        { id: 2, title: "Cars", release_date: 2006 },
-        { id: 3, title: "Star Wars: A New Hope", release_date: 1977 },
-        { id: 4, title: "2 Fast 2 Furious", release_date: 2003 },
-    ];
+    useEffect(() => {
+        const loadPopularMovies = async () => {
+            try {
+                const popularMovies = await getPopularMovies();
+                setMovies(popularMovies);
+            } catch (err) {
+                console.log(err);
+                setError("Failed to load movies...");
+            }
+            finally {
+                setLoading(false);
+            }
+        }
+        loadPopularMovies();
+    }, []);    // runs once when the component mounts, fetches popular movies and sets them in state
 
-    const handleSearch = (e) => {
+    const handleSearch = async (e) => {
         e.preventDefault();     // don't clear form on submit
-        alert(searchQuery);
+        if(!searchQuery.trim()) return;
+        if(loading) return;
+
+        setLoading(true);
+        try {
+            const searchResults = await searchMovies(searchQuery);
+            setMovies(searchResults);
+            setError(null);
+        } catch (err) {
+            console.log(err);
+            setError("Failed to search movies...")
+        } finally {
+            setLoading(false);
+        }
+
+        setSearchQuery("");
     };
 
 
@@ -30,13 +58,17 @@ function Home() {
             <button type="submit" className="search-button">Search</button>
         </form>
 
-        <div className="movies-grid">
+        {error && <div className='error-message'>{error}</div>}
+
+        {loading ? (
+            <div className='loading'>Loading...</div>
+        ) : (<div className="movies-grid">
             {movies.map(
                 (movie) => (
                     (<MovieCard movie={movie} key={movie.id} />)
                 )
             )}
-        </div>
+        </div>)}
     </div>
 }
 
