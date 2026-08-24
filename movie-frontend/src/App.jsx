@@ -6,21 +6,22 @@ import './css/App.css'
 import Home from './pages/Home'
 import { Routes, Route } from 'react-router-dom'
 import Favorites from './pages/Favorites'
+import { MovieProvider } from './contexts/MovieContext'
 import NavBar from './components/NavBar'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <div>
+    <MovieProvider>
       <NavBar />
-    <main className='main-content'>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/favorites" element={<Favorites />} />
-      </Routes>
-    </main>
-    </div>
+      <main className='main-content'>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/favorites" element={<Favorites />} />
+        </Routes>
+      </main>
+    </MovieProvider>
   )
 }
 
