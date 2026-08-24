@@ -1,3 +1,4 @@
+import '../css/Home.css'
 import MovieCard from "../components/MovieCard";
 import { useState } from "react";
 
@@ -20,8 +21,8 @@ function Home() {
     return <div className="Home">
         <form onSubmit={handleSearch} className="search-form">
             <input
-                type="text" 
-                placeholder="Search for Movies..." 
+                type="text"
+                placeholder="Search for Movies..."
                 className="search-input"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}    // state changes, whole component re-rendered
@@ -30,11 +31,11 @@ function Home() {
         </form>
 
         <div className="movies-grid">
-            {movies.map((movie) => (
-                movie.title.toLowerCase().startsWith(searchQuery) && (
-                    <MovieCard movie={movie} key={movie.id} />
+            {movies.map(
+                (movie) => (
+                    (<MovieCard movie={movie} key={movie.id} />)
                 )
-            ))}
+            )}
         </div>
     </div>
 }
